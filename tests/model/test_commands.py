@@ -48,3 +48,18 @@ def test_create_account_stores_the_account(customer_client):
                             customer_client=customer_client)
 
     account_repository.store.assert_called_with(account)
+
+
+def test_close_account_closes_the_account(account_repository, customer_client):
+    customer_client.add_customer_with_id('12345')
+    account = Account(customer_id='12345', account_status='active')
+    account_repository.store(account)
+
+    commands.close_account(account.account_number, account_repository)
+
+    assert account.account_status == 'closed'
+
+
+def test_close_account_when_customer_not_found(account_repository):
+    with pytest.raises(AccountNotFound):
+        commands.close_account('1', account_repository)

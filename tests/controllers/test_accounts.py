@@ -82,6 +82,18 @@ def test_post_accounts_when_customer_does_not_exist(create_account, web_client,
     assert response.get_json() == {'message': 'Customer not found'}
 
 
+@patch('account_service.domain.commands.close_account')
+def test_close_accounts(close_account, web_client, account_repository):
+    account_number = '123456789'
+    request_body = dict(accountNumber=account_number)
+    response = web_client.put(f'/accounts/close', json=request_body)
+
+    assert response.status_code == 200
+
+    close_account.assert_called_with(
+        account_number, account_repository)
+
+
 @pytest.mark.parametrize(
     'bad_payload',
     [{},

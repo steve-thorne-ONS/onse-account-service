@@ -49,6 +49,22 @@ def post_account():
     }), HTTPStatus.CREATED
 
 
+@accounts.route('/close', methods=['PUT'])
+def close_account():
+    if not request.is_json:
+        raise ContentTypeError()
+    body = request.get_json()
+
+    account_number = body['accountNumber']
+
+    print(account_number)
+    commands.close_account(account_number, current_app.account_repository)
+
+    return jsonify({
+        'accountNumber': account_number
+    }), HTTPStatus.OK
+
+
 @accounts.errorhandler(AccountNotFound)
 def account_not_found(e):
     return jsonify(message='Not found'), HTTPStatus.NOT_FOUND
